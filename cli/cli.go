@@ -41,8 +41,8 @@ var cmd = &cobra.Command{
 			logging.Critical("Must provide a target URL")
 		case wordlistPath == "":
 			logging.Critical("No wordlist provided")
-		case threads == 0:
-			logging.Critical("Threads cannot be 0, at least 1.")
+		case threads < 1:
+			logging.Critical("Threads cannot be below 0, at least 1.")
 		}
 
 		// create a new config instance from args[0]
