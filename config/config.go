@@ -12,6 +12,12 @@ var defaultCodes = []int{
 	205, 206, 207, 208, 226,
 }
 
+var validMethods = []string{
+	"GET", "HEAD", "POST", "PUT",
+	"DELETE", "CONNECT", "OPTIONS",
+	"TRACE", "PATCH",
+}
+
 type Config struct {
 	// the raw target address
 	target string
@@ -28,6 +34,8 @@ type Config struct {
 	// amount of time to wait
 	// (in seconds)
 	timeout int
+	// method type of the request
+	method string
 }
 
 func isValidUrl(text string) bool {
@@ -59,6 +67,23 @@ func (c *Config) SetThreadCount(count int) {
 	c.threadCount = count
 }
 
+// Set the method of the request
+func (c *Config) SetMethod(method string) {
+	has := false
+
+	for _, m := range validMethods {
+		if m == method {
+			has = true
+			break
+		}
+	}
+
+	if !has {
+		logging.Critical("invalid request method %s", method)
+	}
+	c.method = method
+}
+
 // Add one or multiple words to the wordlist
 func (c *Config) AddWord(word ...string) {
 	for _, w := range word {
@@ -84,3 +109,4 @@ func (c *Config) Timeout() int       { return c.timeout }
 func (c *Config) Wordlist() []string { return c.wordlist }
 func (c *Config) ValidCodes() []int  { return c.validCodes }
 func (c *Config) Target() string     { return c.target }
+func (c *Config) Method() string     { return c.method }

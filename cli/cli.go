@@ -26,6 +26,8 @@ var (
 	// time to wait for a request in seconds
 	timeout    int = 5
 	validCodes string
+	// the method of the web requests
+	method string = "GET"
 )
 
 var cmd = &cobra.Command{
@@ -56,6 +58,7 @@ var cmd = &cobra.Command{
 		conf.AddWord(strings.Split(wlsContent, wordlistSeparator)...)
 		conf.SetThreadCount(threads)
 		conf.SetTimeout(timeout)
+		conf.SetMethod(method)
 		if validCodes != "" {
 			statusCodes := parseArrayInt(validCodes)
 			conf.AddValidCode(statusCodes...)
@@ -84,7 +87,8 @@ func parseArrayInt(v string) []int {
 
 func init() {
 	cmd.PersistentFlags().IntVarP(&threads, "threads", "p", threads, "number of attempts to run at the same time")
-	// cmd.PersistentFlags().IntVarP(&timeout, "timeout", "t", timeout, "time in seconds to wait for a request")
+	cmd.PersistentFlags().StringVarP(&method, "method", "m", method, "method of the requests to be done")
+	cmd.PersistentFlags().IntVarP(&timeout, "timeout", "t", timeout, "time in seconds to wait for a request")
 	cmd.PersistentFlags().StringVarP(&wordlistPath, "wordlist", "w", wordlistPath, "words to use")
 	cmd.PersistentFlags().StringVarP(&wordlistSeparator, "wordlist-separator", "s", wordlistSeparator, "separator of words in the wordlist")
 	cmd.PersistentFlags().BoolVarP(&logging.DebugEnable, "debug", "d", logging.DebugEnable, "print more information about the runtime")

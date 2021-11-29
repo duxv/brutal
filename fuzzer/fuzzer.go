@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/logrusorgru/aurora"
 )
@@ -20,6 +21,7 @@ type Result struct {
 	path   string
 }
 type Fuzzer struct {
+	method     string
 	target     string
 	threads    int
 	timeout    int
@@ -29,6 +31,7 @@ type Fuzzer struct {
 
 func New(conf *config.Config) *Fuzzer {
 	f := &Fuzzer{
+		method:     conf.Method(),
 		threads:    conf.Threads(),
 		timeout:    conf.Timeout(),
 		wordlist:   conf.Wordlist(),
@@ -52,7 +55,7 @@ func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 		mutex.Lock()
 		host := f.target + w
 		mutex.Unlock()
-		req, err := http.Get(host)
+		req, err := f.request(host)
 		if err != nil {
 			results <- nil
 			continue
@@ -62,6 +65,18 @@ func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 			path:   w,
 		}
 	}
+}
+
+func (f *Fuzzer) request(url string) (*http.Response, error) {
+	client := &http.Client{
+		Timeout: time.Second * time.Duration(f.timeout),
+	}
+	req, err := http.NewRequest(f.method, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	return resp, err
 }
 
 func (f *Fuzzer) Run() {
