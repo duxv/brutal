@@ -1,4 +1,4 @@
-module brutal
+module github.com/duxv/brutal
 
 go 1.17
 

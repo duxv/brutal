@@ -1,10 +1,11 @@
 package config
 
 import (
-	"brutal/logging"
 	"errors"
 	"net/url"
 	"strings"
+
+	"github.com/duxv/brutal/logging"
 )
 
 var defaultCodes = []int{

@@ -1,14 +1,14 @@
 package fuzzer
 
 import (
-	"brutal/config"
-	"brutal/logging"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/duxv/brutal/config"
+	"github.com/duxv/brutal/logging"
 	"github.com/logrusorgru/aurora"
 )
 

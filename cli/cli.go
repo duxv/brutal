@@ -1,13 +1,13 @@
 package cli
 
 import (
-	"brutal/config"
-	"brutal/fuzzer"
-	"brutal/logging"
 	"io/ioutil"
 	"strconv"
 	"strings"
 
+	"github.com/duxv/brutal/config"
+	"github.com/duxv/brutal/fuzzer"
+	"github.com/duxv/brutal/logging"
 	"github.com/spf13/cobra"
 )
 

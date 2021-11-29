@@ -1,6 +1,6 @@
 package main
 
-import "brutal/cli"
+import "github.com/duxv/brutal/cli"
 
 func main() {
 	cli.Execute()
