@@ -61,7 +61,11 @@ func (c *Config) SetThreadCount(count int) {
 
 // Add one or multiple words to the wordlist
 func (c *Config) AddWord(word ...string) {
-	c.wordlist = append(c.wordlist, word...)
+	for _, w := range word {
+		if w != "" && w != "\t" && w != "\r" {
+			c.wordlist = append(c.wordlist, w)
+		}
+	}
 }
 
 // Add one or multiple valid codes to the valid codes
