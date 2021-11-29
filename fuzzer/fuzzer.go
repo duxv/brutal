@@ -1,0 +1,94 @@
+package fuzzer
+
+import (
+	"brutal/config"
+	"brutal/logging"
+	"fmt"
+	"net/http"
+	"strings"
+	"sync"
+
+	"github.com/logrusorgru/aurora"
+)
+
+var (
+	mutex sync.Mutex
+)
+
+type Result struct {
+	status int
+	path   string
+}
+type Fuzzer struct {
+	target     string
+	threads    int
+	timeout    int
+	wordlist   []string
+	validCodes []int
+}
+
+func New(conf *config.Config) *Fuzzer {
+	f := &Fuzzer{
+		threads:    conf.Threads(),
+		timeout:    conf.Timeout(),
+		wordlist:   conf.Wordlist(),
+		validCodes: conf.ValidCodes(),
+		target:     conf.Target(),
+	}
+	return f
+}
+
+func containsInt(arr []int, e int) bool {
+	for _, element := range arr {
+		if element == e {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
+	for w := range words {
+		mutex.Lock()
+		host := f.target + w
+		mutex.Unlock()
+		req, err := http.Get(host)
+		if err != nil {
+			results <- nil
+			continue
+		}
+		results <- &Result{
+			status: req.StatusCode,
+			path:   w,
+		}
+	}
+}
+
+func (f *Fuzzer) Run() {
+	logging.Info("Fuzzing started")
+	logging.Info("Target URL: %s", f.target)
+	logging.Info("Positive codes: %v", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(f.validCodes)), ", "), "[]"))
+	logging.Info("All results will be printed below. If nothing is printed, means nothing found.")
+	words := make(chan string, f.threads)
+	results := make(chan *Result)
+
+	for i := 0; i < cap(words); i++ {
+		go f.worker(words, results)
+	}
+
+	go func() {
+		for _, word := range f.wordlist {
+			words <- word
+		}
+	}()
+
+	for range f.wordlist {
+		r := <-results
+		if r != nil && containsInt(f.validCodes, r.status) {
+			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), f.target+r.path)
+		}
+	}
+
+	close(words)
+	close(results)
+}
