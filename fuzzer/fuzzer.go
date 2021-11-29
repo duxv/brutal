@@ -84,21 +84,29 @@ func (f *Fuzzer) Run() {
 	logging.Info("Target URL: %s", f.target)
 	logging.Info("Positive codes: %v", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(f.validCodes)), ", "), "[]"))
 	logging.Info("All results will be printed below. If nothing is printed, means nothing found.")
-	words := make(chan string, f.threads)
+	words := make(chan string)
 	results := make(chan *Result)
-
-	for i := 0; i < cap(words); i++ {
-		go f.worker(words, results)
-	}
-
 	go func() {
+		defer close(words) // close words channel as soon as it reads every wordlist
 		for _, word := range f.wordlist {
 			words <- word
 		}
 	}()
 
-	for range f.wordlist {
-		r := <-results
+	go func() {
+		defer close(results) // closes results as soon as all workers are done (after words channel is closed)
+		wg := sync.WaitGroup{}
+		wg.Add(f.threads)
+		for i := 0; i < f.threads; i++ {
+			go func() {
+				defer wg.Done()
+				f.worker(words, results) // these will be done as soon as processes all words and channel is closed
+			}()
+		}
+		wg.Wait()
+	}()
+
+	for r := range results {
 		if r != nil && containsInt(f.validCodes, r.status) {
 			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), f.target+r.path)
 		}
