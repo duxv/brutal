@@ -111,7 +111,4 @@ func (f *Fuzzer) Run() {
 			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), f.target+r.path)
 		}
 	}
-
-	close(words)
-	close(results)
 }
