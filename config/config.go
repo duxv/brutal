@@ -88,6 +88,7 @@ func (c *Config) SetMethod(method string) {
 func (c *Config) AddWord(word ...string) {
 	for _, w := range word {
 		if w != "" && w != "\t" && w != "\r" {
+			w = strings.TrimSpace(w)
 			c.wordlist = append(c.wordlist, w)
 		}
 	}
