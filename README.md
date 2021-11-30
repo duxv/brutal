@@ -16,7 +16,6 @@ A lightweight, simple to use web fuzzer.
     <li> <b>--match-status</b> - the status code of a request must be part of these or it will be count as invalid; if not specified defaults are being used (statuses must be separated by commas); to completely ignore the status use --match-status "" </li>
     <li> <b>--match-length</b> - the response body must have this amount of characters; default is disabled</li>
     <li> <b>--match-regex</b> - the response body must match this regex</li>
-
     <li> <b>--wordlist</b> - the file to retrieve the words from</li>
     <li> <b>--wordlist-separator</b> what to separate the words by in the wordlist; by default they are separated by a newline </li>
 
