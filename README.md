@@ -5,22 +5,21 @@ A lightweight, simple to use web fuzzer.
 
 # Usage
 
-<p> Brutal is pretty easy to use. 
-  <ol> 
-  <li> <b>--debug</b> - for printing more details about the runtime (do not use if you are not trying to develop the program) </li>
-  <li> <b>--help</b> - retrieve all the commands and a small description </li>
-  <li> <b>--method</b> - change the method of the done requests (must be a valid one) </li>
-  <li> <b>--threads</b> - the amount of requests to be done at the same time;
-  it is recommended to not use too many. </li>
-    <li> <b>--timeout</b> - the amount of seconds to wait for a request; if timeout is reached, the request is not count as valid </li>
-    <li> <b>--match-status</b> - the status code of a request must be part of these or it will be count as invalid; if not specified defaults are being used (statuses must be separated by commas); to completely ignore the status use --match-status "" </li>
-    <li> <b>--match-length</b> - the response body must have this amount of characters; default is disabled</li>
-    <li> <b>--match-regex</b> - the response body must match this regex</li>
-    <li> <b>--wordlist</b> - the file to retrieve the words from</li>
-    <li> <b>--wordlist-separator</b> what to separate the words by in the wordlist; by default they are separated by a newline </li>
+<p> Brutal is pretty easy to use. </p>
 
-   </ol>
-</p>
+
+  Command                     |    Description
+  ---                         |    ---
+  **--debug**                 |    print more details about the runtime
+  **--help**                  |    retrieve all commands and a small description for each
+  **--method**                |    change the method of the requests
+  **--threads**               |    the amount of requests to be done at the same time
+  **--timeout**               |    the amount of seconds to wait for a request
+  **--match-status**          |    all positive status codes, separated by a comma
+  **--match-length**          |    the response body must have this amount of characters
+  **--match-regex**           |    the response body must match this regex
+  **--wordlist**              |    the file to retrieve the words from
+  **--wordlist-separator**    |    what to separate the words by in the wordlist
 
 ### FUZZ keyword
 
