@@ -76,7 +76,6 @@ func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 			results <- nil
 			continue
 		}
-
 		results <- &Result{
 			address: host,
 		}

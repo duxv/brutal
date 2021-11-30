@@ -9,7 +9,7 @@ A lightweight, simple to use web fuzzer.
   <ol> 
   <li> <b>--debug</b> - for printing more details about the runtime (do not use if you are not trying to develop the program) </li>
   <li> <b>--help</b> - retrieve all the commands and a small description </li>
-  <li> <b>--method</b> - change the method of the done requests *must be valid* </li>
+  <li> <b>--method</b> - change the method of the done requests (must be a valid one) </li>
   <li> <b>--threads</b> - the amount of requests to be done at the same time;
   it is recommended to not use too many. </li>
     <li> <b>--timeout</b> - the amount of seconds to wait for a request; if timeout is reached, the request is not count as valid </li>
@@ -41,6 +41,21 @@ If you'd use the keyword multiple times, it will get replaced each time it has b
 Sometimes one thread can be faster than four, because of the synchronization price. <br>
 If you have 0ms latency, one thread would be just fine, either way you can use more. <br>
 It depends on the time it takes to process a request.<br>
+
+### Which are the valid methods?
+
+
+<ul> 
+  <li>GET</li>
+  <li>HEAD</li>
+  <li>POST</li>
+  <li>PUT</li>
+  <li>DELETE</li>
+  <li>CONNECT</li>
+  <li>OPTIONS</li>
+  <li>TRACE</li>
+  <li>PATCH</li>
+</ul>
 
 ## Having a suggestion?
 
