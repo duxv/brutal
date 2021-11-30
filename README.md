@@ -43,7 +43,7 @@ It depends on the time it takes to process a request.<br>
 
 ### Having a suggestion
 
-If you have any suggestions, ideas or found any bug, you can join this [Discord server](https://discord.gg/ktEBKceytN)<br>: 
+If you have any suggestions, ideas or found any bug, you can join [this Discord server](https://discord.gg/ktEBKceytN).<br>
 
 ### Output of the --help flag
 ```
