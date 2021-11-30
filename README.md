@@ -24,8 +24,7 @@ A lightweight, simple to use web fuzzer.
 
 <p>The 'FUZZ' keyword is used to represent the place where to word is going to be <br> 
 
-For instance, if you run `brutal http://localhost:9000/FUZZ`, and the words in the wordlist are 'etc' and 'passwd', <br>
-Brutal will request the next URLS: <br>
+For instance, if you run `brutal http://localhost:9000/FUZZ`, and the words in the wordlist are 'etc' and 'passwd', the next URLs will be requested: <br>
 - `http://localhost:9000/etc`
 - `http://localhost:9000/passwd`
 
