@@ -17,8 +17,8 @@ var (
 )
 
 type Result struct {
-	status int
-	path   string
+	status  int
+	address string
 }
 type Fuzzer struct {
 	method     string
@@ -53,16 +53,17 @@ func containsInt(arr []int, e int) bool {
 func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 	for w := range words {
 		mutex.Lock()
-		host := f.target + w
+		host := strings.Replace(f.target, "FUZZ", w, -1)
 		mutex.Unlock()
+		logging.Debug("Trying %s", host)
 		req, err := f.request(host)
 		if err != nil {
 			results <- nil
 			continue
 		}
 		results <- &Result{
-			status: req.StatusCode,
-			path:   w,
+			status:  req.StatusCode,
+			address: host,
 		}
 	}
 }
@@ -108,7 +109,7 @@ func (f *Fuzzer) Run() {
 
 	for r := range results {
 		if r != nil && containsInt(f.validCodes, r.status) {
-			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), f.target+r.path)
+			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), r.address)
 		}
 	}
 }

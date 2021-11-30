@@ -32,7 +32,7 @@ var (
 
 var cmd = &cobra.Command{
 	Use:     "brutal",
-	Example: "brutal http://127.0.0.1",
+	Example: "brutal http://127.0.0.1/FUZZ",
 	Short:   "A bloatless url fuzzer",
 	Run: func(cmd *cobra.Command, args []string) {
 		// command line errors
@@ -43,6 +43,12 @@ var cmd = &cobra.Command{
 			logging.Critical("No wordlist provided")
 		case threads < 1:
 			logging.Critical("Threads cannot be below 0, at least 1.")
+		case !strings.Contains(args[0], "FUZZ"):
+			logging.Critical(`
+			Did not specify keyword FUZZ in the URL
+			Example: http://localhost:9000/FUZZ
+			Brutal will replace the keyword fuzz every time with a word from wordlist.
+			`)
 		}
 
 		// create a new config instance from args[0]

@@ -45,9 +45,6 @@ func isValidUrl(text string) bool {
 }
 
 func New(target string) (*Config, error) {
-	if !strings.HasSuffix(target, "/") {
-		target += "/"
-	}
 
 	if !isValidUrl(target) {
 		return nil, errors.New("invalid URL")
