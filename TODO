@@ -1,3 +1,4 @@
 - import settings from ~/.config/.brutal file
 - make a prettier UI
 - add option to create raw request
+- use flag for the command line because spf13/cobra is complicated

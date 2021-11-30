@@ -32,7 +32,7 @@ For instance, if you run `brutal http://localhost:9000/FUZZ`, and the words in t
 
 <br>
 
-If you'd use the keyword multiple times, it will get replaced each time it has been used.
+If you'd use the keyword multiple times, it will get replaced each time.
 
 </p>
 
