@@ -3,15 +3,12 @@ package config
 import (
 	"errors"
 	"net/url"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/duxv/brutal/logging"
 )
-
-var defaultCodes = []int{
-	200, 201, 202, 203, 204,
-	205, 206, 207, 208, 226,
-}
 
 var validMethods = []string{
 	"GET", "HEAD", "POST", "PUT",
@@ -19,13 +16,15 @@ var validMethods = []string{
 	"TRACE", "PATCH",
 }
 
+type Matcher struct {
+	Length      int
+	Regex       *regexp.Regexp
+	StatusCodes []int
+}
+
 type Config struct {
 	// the raw target address
 	target string
-	// will count as successful only
-	// if the status code is part of
-	// one of those integers
-	validCodes []int
 	// the parsed list of every path to try
 	wordlist []string
 	// the amount of attempts to run
@@ -37,6 +36,8 @@ type Config struct {
 	timeout int
 	// method type of the request
 	method string
+	// the matching configuration
+	matcher *Matcher
 }
 
 func isValidUrl(text string) bool {
@@ -50,7 +51,10 @@ func New(target string) (*Config, error) {
 		return nil, errors.New("invalid URL")
 	}
 
-	c := &Config{target: target}
+	c := &Config{
+		target:  target,
+		matcher: &Matcher{},
+	}
 
 	return c, nil
 }
@@ -82,6 +86,20 @@ func (c *Config) SetMethod(method string) {
 	c.method = method
 }
 
+// Set the length property of the matcher
+func (c *Config) SetMatcherLength(num int) {
+	c.matcher.Length = num
+}
+
+// Set the regex property of the matcher
+func (c *Config) SetMatcherRegex(re *regexp.Regexp) {
+	c.matcher.Regex = re
+}
+
+func (c *Config) AddMatcherStatusCodes(codes ...int) {
+	c.matcher.StatusCodes = append(c.matcher.StatusCodes, codes...)
+}
+
 // Add one or multiple words to the wordlist
 func (c *Config) AddWord(word ...string) {
 	for _, w := range word {
@@ -92,20 +110,24 @@ func (c *Config) AddWord(word ...string) {
 	}
 }
 
-// Add one or multiple valid codes to the valid codes
-func (c *Config) AddValidCode(code ...int) {
-	c.validCodes = append(c.validCodes, code...)
+// Add one or multiple valid codes to the valid
+func (c *Config) AddMatcherStatusCodesString(codes ...string) {
+	for _, code := range codes {
+		code = strings.TrimSpace(code)
+		if code == "" {
+			continue
+		}
+		num, err := strconv.Atoi(code)
+		if err != nil {
+			logging.Critical("Error while trying to parse status code '%s': %v", code, err)
+		}
+		c.matcher.StatusCodes = append(c.matcher.StatusCodes, num)
+	}
 }
 
-// Change all the settings to the default ones
-func (c *Config) ResetDefault() {
-	c.AddValidCode(defaultCodes...)
-	logging.Debug("Added all default status codes")
-}
-
-func (c *Config) Threads() int       { return c.threadCount }
-func (c *Config) Timeout() int       { return c.timeout }
-func (c *Config) Wordlist() []string { return c.wordlist }
-func (c *Config) ValidCodes() []int  { return c.validCodes }
-func (c *Config) Target() string     { return c.target }
-func (c *Config) Method() string     { return c.method }
+func (c Config) Threads() int       { return c.threadCount }
+func (c Config) Timeout() int       { return c.timeout }
+func (c Config) Wordlist() []string { return c.wordlist }
+func (c Config) Target() string     { return c.target }
+func (c Config) Method() string     { return c.method }
+func (c Config) Matcher() *Matcher  { return c.matcher }

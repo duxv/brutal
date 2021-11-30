@@ -2,6 +2,7 @@ package fuzzer
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
@@ -17,26 +18,25 @@ var (
 )
 
 type Result struct {
-	status  int
 	address string
 }
 type Fuzzer struct {
-	method     string
-	target     string
-	threads    int
-	timeout    int
-	wordlist   []string
-	validCodes []int
+	matcher  *config.Matcher
+	method   string
+	target   string
+	threads  int
+	timeout  int
+	wordlist []string
 }
 
 func New(conf *config.Config) *Fuzzer {
 	f := &Fuzzer{
-		method:     conf.Method(),
-		threads:    conf.Threads(),
-		timeout:    conf.Timeout(),
-		wordlist:   conf.Wordlist(),
-		validCodes: conf.ValidCodes(),
-		target:     conf.Target(),
+		method:   conf.Method(),
+		threads:  conf.Threads(),
+		timeout:  conf.Timeout(),
+		wordlist: conf.Wordlist(),
+		target:   conf.Target(),
+		matcher:  conf.Matcher(),
 	}
 	return f
 }
@@ -56,13 +56,28 @@ func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 		host := strings.Replace(f.target, "FUZZ", w, -1)
 		mutex.Unlock()
 		logging.Debug("Trying %s", host)
-		req, err := f.request(host)
+		res, err := f.request(host)
 		if err != nil {
 			results <- nil
 			continue
 		}
+		body, _ := ioutil.ReadAll(res.Body)
+		bodyStr := string(body)
+
+		// Check if the response meets all of the matcher's requirements
+		switch {
+		case f.matcher.Length > -1 && len([]rune(bodyStr)) != f.matcher.Length:
+			results <- nil
+			continue
+		case len(f.matcher.StatusCodes) > 0 && !containsInt(f.matcher.StatusCodes, res.StatusCode):
+			results <- nil
+			continue
+		case f.matcher.Regex != nil && !f.matcher.Regex.Match(body):
+			results <- nil
+			continue
+		}
+
 		results <- &Result{
-			status:  req.StatusCode,
 			address: host,
 		}
 	}
@@ -82,8 +97,17 @@ func (f *Fuzzer) request(url string) (*http.Response, error) {
 
 func (f *Fuzzer) Run() {
 	logging.Info("Fuzzing started")
-	logging.Info("Target URL: %s", f.target)
-	logging.Info("Positive codes: %v", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(f.validCodes)), ", "), "[]"))
+	logging.Info("Target URL: %s", strings.Replace(f.target, "FUZZ", "{{.word}}", -1))
+
+	if len(f.matcher.StatusCodes) > 0 {
+		logging.Info("Positive codes: %v", strings.Trim(strings.Join(strings.Fields(fmt.Sprint(f.matcher.StatusCodes)), ", "), "[]"))
+	}
+	if f.matcher.Length != -1 {
+		logging.Info("Exact length: %d", f.matcher.Length)
+	}
+	if f.matcher.Regex != nil {
+		logging.Info("Response body match %q", f.matcher.Regex.String())
+	}
 	logging.Info("All results will be printed below. If nothing is printed, means nothing found.")
 	words := make(chan string)
 	results := make(chan *Result)
@@ -108,8 +132,8 @@ func (f *Fuzzer) Run() {
 	}()
 
 	for r := range results {
-		if r != nil && containsInt(f.validCodes, r.status) {
-			fmt.Printf("%v%d%v %s\n", aurora.Yellow("["), aurora.Blue(r.status), aurora.Yellow("]"), r.address)
+		if r != nil {
+			fmt.Printf("[%v] %s\n", aurora.Blue("MATCH"), r.address)
 		}
 	}
 }

@@ -2,7 +2,7 @@ package cli
 
 import (
 	"io/ioutil"
-	"strconv"
+	"regexp"
 	"strings"
 
 	"github.com/duxv/brutal/config"
@@ -24,10 +24,16 @@ var (
 	// // use the default settings
 	// configPath string
 	// time to wait for a request in seconds
-	timeout    int = 5
-	validCodes string
+	timeout int = 5
 	// the method of the web requests
 	method string = "GET"
+
+	// the status codes count as valid
+	validCodes string = "200,201,202,203,204,205,206,207,208,226"
+	// the length of the response body
+	responseLength int = -1
+	// the raw regexp match expression
+	rawRegex string
 )
 
 var cmd = &cobra.Command{
@@ -65,30 +71,18 @@ var cmd = &cobra.Command{
 		conf.SetThreadCount(threads)
 		conf.SetTimeout(timeout)
 		conf.SetMethod(method)
-		if validCodes != "" {
-			statusCodes := parseArrayInt(validCodes)
-			conf.AddValidCode(statusCodes...)
-		} else {
-			conf.ResetDefault()
+		conf.AddMatcherStatusCodesString(strings.Split(validCodes, ",")...)
+		conf.SetMatcherLength(responseLength)
+		if rawRegex != "" {
+			compiledRegex, err := regexp.Compile(rawRegex)
+			if err != nil {
+				logging.Critical("Invalid regex to match: %q", rawRegex)
+			}
+			conf.SetMatcherRegex(compiledRegex)
 		}
 		fuzz := fuzzer.New(conf)
 		fuzz.Run()
 	},
-}
-
-func parseArrayInt(v string) []int {
-	arr := strings.Split(v, ",")
-	intArr := []int{}
-
-	for _, s := range arr {
-		s = strings.TrimSpace(s)
-		num, err := strconv.Atoi(s)
-		if err != nil {
-			logging.Critical("invalid number: %s", s)
-		}
-		intArr = append(intArr, num)
-	}
-	return intArr
 }
 
 func init() {
@@ -99,7 +93,9 @@ func init() {
 	cmd.PersistentFlags().StringVarP(&wordlistSeparator, "wordlist-separator", "s", wordlistSeparator, "separator of words in the wordlist")
 	cmd.PersistentFlags().BoolVarP(&logging.DebugEnable, "debug", "d", logging.DebugEnable, "print more information about the runtime")
 	// cmd.PersistentFlags().StringVarP(&configPath, "config", "c", configPath, "path of the config file")
-	cmd.PersistentFlags().StringVarP(&validCodes, "valid-codes", "v", validCodes, "http status codes identified as valid (separated by a comma)")
+	cmd.PersistentFlags().StringVarP(&validCodes, "match-status", "x", validCodes, "http status codes identified as valid (separated by a comma)")
+	cmd.PersistentFlags().IntVarP(&responseLength, "match-length", "l", responseLength, "length of the response body must be equal to")
+	cmd.PersistentFlags().StringVarP(&rawRegex, "match-regex", "r", rawRegex, "response body must match this regex")
 }
 
 func Execute() {

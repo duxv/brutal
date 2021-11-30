@@ -1,2 +1,3 @@
 - import settings from ~/.config/.brutal file
 - make a prettier UI
+- add matcher options (by status, regexp, response SIZE)
