@@ -1,7 +1,29 @@
 # Brutal
 
-A lightweight, simple to use web fuzzer.
+A lightweight, very fast & simple to use web fuzzer.
 
+# Installation
+
+### Install Go
+
+Debian / Ubuntu
+```
+sudo apt update && supo apt upgrade && sudo apt install golang-go
+```
+
+Arch
+```
+sudo pacman -Sy go
+```
+
+
+Windows<br>
+[Click here](https://go.dev/dl/)
+
+### Install Brutal
+```
+go install github.com/duxv/brutal
+```
 
 # Usage
 
