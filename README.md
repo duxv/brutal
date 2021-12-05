@@ -22,7 +22,7 @@ Windows<br>
 
 ### Install Brutal
 ```
-go install github.com/duxv/brutal
+go install github.com/duxv/brutal@latest
 ```
 
 # Usage
