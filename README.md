@@ -8,7 +8,7 @@ A lightweight, very fast & simple to use web fuzzer.
 
 Debian / Ubuntu
 ```
-sudo apt update && supo apt upgrade && sudo apt install golang-go
+sudo apt update && sudo apt upgrade && sudo apt install golang-go
 ```
 
 Arch
