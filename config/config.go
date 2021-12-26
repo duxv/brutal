@@ -103,8 +103,8 @@ func (c *Config) AddMatcherStatusCodes(codes ...int) {
 // Add one or multiple words to the wordlist
 func (c *Config) AddWord(word ...string) {
 	for _, w := range word {
-		if w != " " && w != "\t" && w != "\r" {
-			w = strings.TrimSpace(w)
+		w = strings.TrimSpace(w)
+		if w != "" {
 			c.wordlist = append(c.wordlist, w)
 		}
 	}
