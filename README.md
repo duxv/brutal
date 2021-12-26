@@ -98,6 +98,7 @@ Flags:
   -r, --match-regex string          response body must match this regex
   -x, --match-status string         http status codes identified as valid (separated by a comma) (default "200,201,202,203,204,205,206,207,208,226")
   -m, --method string               method of the requests to be done (default "GET")
+  -q, --quick-list string           use a wordlist from the command line arguments (separated by a comma)
   -p, --threads int                 number of attempts to run at the same time (default 1)
   -t, --timeout int                 time in seconds to wait for a request (default 5)
   -w, --wordlist string             words to use
