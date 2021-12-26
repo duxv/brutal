@@ -33,7 +33,8 @@ var (
 	// the length of the response body
 	responseLength int = -1
 	// the raw regexp match expression
-	rawRegex string
+	rawRegex  string
+	quickList string
 )
 
 var cmd = &cobra.Command{
@@ -45,7 +46,7 @@ var cmd = &cobra.Command{
 		switch {
 		case len(args) == 0:
 			logging.Critical("Must provide a target URL")
-		case wordlistPath == "":
+		case wordlistPath == "" && quickList == "":
 			logging.Critical("No wordlist provided")
 		case threads < 1:
 			logging.Critical("Threads cannot be below 0, at least 1.")
@@ -62,15 +63,18 @@ var cmd = &cobra.Command{
 		if err != nil {
 			logging.Critical("URL parse error: %v", err)
 		}
-		wordlistContent, err := ioutil.ReadFile(wordlistPath)
-		if err != nil {
-			logging.Critical("error trying to open wordlist: '%v'", err)
+		if wordlistPath != "" {
+			wordlistContent, err := ioutil.ReadFile(wordlistPath)
+			if err != nil {
+				logging.Critical("error trying to open wordlist: '%v'", err)
+			}
+			wlsContent := string(wordlistContent)
+			conf.AddWord(strings.Split(wlsContent, wordlistSeparator)...)
 		}
-		wlsContent := string(wordlistContent)
-		conf.AddWord(strings.Split(wlsContent, wordlistSeparator)...)
 		conf.SetThreadCount(threads)
 		conf.SetTimeout(timeout)
 		conf.SetMethod(method)
+		conf.AddWord(strings.Split(quickList, ",")...)
 		conf.AddMatcherStatusCodesString(strings.Split(validCodes, ",")...)
 		conf.SetMatcherLength(responseLength)
 		if rawRegex != "" {
@@ -96,6 +100,7 @@ func init() {
 	cmd.PersistentFlags().StringVarP(&validCodes, "match-status", "x", validCodes, "http status codes identified as valid (separated by a comma)")
 	cmd.PersistentFlags().IntVarP(&responseLength, "match-length", "l", responseLength, "length of the response body must be equal to")
 	cmd.PersistentFlags().StringVarP(&rawRegex, "match-regex", "r", rawRegex, "response body must match this regex")
+	cmd.PersistentFlags().StringVarP(&quickList, "quick-list", "q", quickList, "use a wordlist from the command line arguments (separated by a comma)")
 }
 
 func Execute() {
