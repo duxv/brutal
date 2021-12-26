@@ -35,6 +35,7 @@ go install github.com/duxv/brutal@latest
   **--debug**                 |    print more details about the runtime
   **--help**                  |    retrieve all commands and a small description for each
   **--method**                |    change the method of the requests
+  **--quick-list**            |    use a command line string separated by commas as a wordlist
   **--threads**               |    the amount of requests to be done at the same time
   **--timeout**               |    the amount of seconds to wait for a request
   **--match-status**          |    all positive status codes, separated by a comma
