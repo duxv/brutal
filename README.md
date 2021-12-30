@@ -37,7 +37,7 @@ go install github.com/duxv/brutal@latest
   **--method**                |    change the method of the requests
   **--quick-list**            |    use a command line string separated by commas as a wordlist
   **--threads**               |    the amount of requests to be done at the same time
-  **--timeout**               |    the amount of seconds to wait for a request
+  **--timeout**               |    the amount of milliseconds to wait for a request
   **--match-status**          |    all positive status codes, separated by a comma
   **--match-length**          |    the response body must have this amount of characters
   **--match-regex**           |    the response body must match this regex
@@ -100,7 +100,7 @@ Flags:
   -m, --method string               method of the requests to be done (default "GET")
   -q, --quick-list string           use a wordlist from the command line arguments (separated by a comma)
   -p, --threads int                 number of attempts to run at the same time (default 1)
-  -t, --timeout int                 time in seconds to wait for a request (default 5)
+  -t, --timeout int                 time in milliseconds to wait for a request (default 5000)
   -w, --wordlist string             words to use
   -s, --wordlist-separator string   separator of words in the wordlist (default "\n")
 ```

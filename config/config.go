@@ -32,7 +32,7 @@ type Config struct {
 	// not setting it to a high number
 	threadCount int
 	// amount of time to wait
-	// (in seconds)
+	// (in milliseconds)
 	timeout int
 	// method type of the request
 	method string
@@ -59,9 +59,9 @@ func New(target string) (*Config, error) {
 	return c, nil
 }
 
-// Set the timeout to a specific number of seconds
-func (c *Config) SetTimeout(seconds int) {
-	c.timeout = seconds
+// Set the timeout to a specific number of milliseconds
+func (c *Config) SetTimeout(milliseconds int) {
+	c.timeout = milliseconds
 }
 
 // Set the number of goroutines running at the same time

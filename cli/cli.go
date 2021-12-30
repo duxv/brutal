@@ -23,8 +23,8 @@ var (
 	// // if it is empty, the program will
 	// // use the default settings
 	// configPath string
-	// time to wait for a request in seconds
-	timeout int = 5
+	// time to wait for a request in milliseconds
+	timeout int = 5000
 	// the method of the web requests
 	method string = "GET"
 
@@ -92,7 +92,7 @@ var cmd = &cobra.Command{
 func init() {
 	cmd.PersistentFlags().IntVarP(&threads, "threads", "p", threads, "number of attempts to run at the same time")
 	cmd.PersistentFlags().StringVarP(&method, "method", "m", method, "method of the requests to be done")
-	cmd.PersistentFlags().IntVarP(&timeout, "timeout", "t", timeout, "time in seconds to wait for a request")
+	cmd.PersistentFlags().IntVarP(&timeout, "timeout", "t", timeout, "time in milliseconds to wait for a request")
 	cmd.PersistentFlags().StringVarP(&wordlistPath, "wordlist", "w", wordlistPath, "words to use")
 	cmd.PersistentFlags().StringVarP(&wordlistSeparator, "wordlist-separator", "s", wordlistSeparator, "separator of words in the wordlist")
 	cmd.PersistentFlags().BoolVarP(&logging.DebugEnable, "debug", "d", logging.DebugEnable, "print more information about the runtime")

@@ -84,7 +84,7 @@ func (f *Fuzzer) worker(words <-chan string, results chan<- *Result) {
 
 func (f *Fuzzer) request(url string) (*http.Response, error) {
 	client := &http.Client{
-		Timeout: time.Second * time.Duration(f.timeout),
+		Timeout: time.Millisecond * time.Duration(f.timeout),
 	}
 	req, err := http.NewRequest(f.method, url, nil)
 	if err != nil {
